@@ -1,0 +1,6 @@
+{
+  "uuid": "gecosws-chef-activity-notifier-cinnamon@guadalinex.org",
+  "name": "GECOS Chef activity notifier for Cinnamon",
+  "description": "A Cinnamon applet to notify about Chef's activity",
+  "icon": "emblem-system-symbolic"
+}
