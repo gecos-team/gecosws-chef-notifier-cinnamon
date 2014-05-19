@@ -1,0 +1,25 @@
+# Nombre del paquete (minúsculas-separado-con-guiones)
+name: gecosws-chef-notifier-cinnamon
+
+# Autor 
+author: Javier Hernández <jhernandez@emergya.com>
+
+# Priority
+priority: optional
+
+# Section
+section: metapackages
+
+# Descripción corta
+shortdesc: "GECOS Chef Notifier for Cinnamon Desktop."
+
+# Descipción larga, las lineas han de estar separadas por "\n "
+longdesc: "GECOS Chef Snitch Notifier for Cinnamon Desktop."
+
+# Versión del paquete
+version: 1.0
+
+# Cambios en esta versión
+changes:
+    - Initial release
+
