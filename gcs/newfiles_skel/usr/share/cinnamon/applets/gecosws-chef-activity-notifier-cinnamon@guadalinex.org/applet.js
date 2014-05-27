@@ -84,12 +84,12 @@ MyApplet.prototype = {
       if (active) {
         this.set_applet_icon_symbolic_name('emblem-synchronizing-symbolic');
         this.set_applet_tooltip(ACTIVE_TRUE_MSG);
-        Main.notify(APPLET_TITLE, ACTIVE_TRUE_MSG);
+//        Main.notify(APPLET_TITLE, ACTIVE_TRUE_MSG);
       } else {
         this.set_applet_icon_symbolic_name('emblem-system-symbolic');
         this.set_applet_tooltip(ACTIVE_FALSE_MSG);
         // Do not notify if _isFirstRun
-        if (!this._isFirstRun) { Main.notify(APPLET_TITLE, ACTIVE_FALSE_MSG) };
+//        if (!this._isFirstRun) { Main.notify(APPLET_TITLE, ACTIVE_FALSE_MSG) };
       }
       this._isFirstRun = false;
     }));
