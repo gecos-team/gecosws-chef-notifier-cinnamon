@@ -26,7 +26,7 @@ Copyright (C) 2014 Junta de Andalucia. <http://www.juntadeandalucia.es/>
 
 const Lang = imports.lang;
 const Applet = imports.ui.applet;
-const DBus = imports.dbus;
+const Gio = imports.gi.Gio;
 const Main = imports.ui.main;
 
 // DBus
@@ -44,21 +44,43 @@ const ACTIVE_FALSE_MSG = 'Chef is not working on your system right now';
 
 // Chef Snitch Service specification
 //
-const ChefSnitchServiceInterface = {
-  name: "org.guadalinex.ChefSnitch",
-  methods: [
-    {name: "NotifyMessage", inSignature: 's', outSignature: 'b'},
-    {name: "GetActive",     inSignature: '',  outSignature: 'b'},
-    {name: "SetActive",     inSignature: 'b', outSignature: 'b'},
-    {name: "GetMessage",    inSignature: '',  outSignature: 's'}
-  ],
-  signals: [
-    {name: 'IsActiveHasChanged'},
-    {name: 'MessageNotified'}
-  ]
-};
+const ChefSnitchServiceInterface = 
+'<node> \
+  <interface name="org.guadalinex.ChefSnitch"> \
+        <method name="NotifyMessage"> \
+            <arg type="s" direction="in" /> \
+            <arg type="b" direction="out" /> \
+        </method> \
+        <method name="GetActive"> \
+            <arg type="b" direction="out" /> \
+        </method> \
+        <method name="SetActive"> \
+            <arg type="b" direction="in" /> \
+            <arg type="b" direction="out" /> \
+        </method> \
+        <method name="GetMessage"> \
+            <arg type="s" direction="out" /> \
+        </method> \
+        <signal name="IsActiveHasChanged"> \
+        </signal> \
+        <signal name="MessageNotified"> \
+        </signal> \
+   </interface> \
+</node>';
+//  name: "org.guadalinex.ChefSnitch",
+//  methods: [
+//    {name: "NotifyMessage", inSignature: 's', outSignature: 'b'},
+//    {name: "GetActive",     inSignature: '',  outSignature: 'b'},
+//    {name: "SetActive",     inSignature: 'b', outSignature: 'b'},
+//    {name: "GetMessage",    inSignature: '',  outSignature: 's'}
+//  ],
+//  signals: [
+//    {name: 'IsActiveHasChanged'},
+//    {name: 'MessageNotified'}
+//  ]
+//};
 
-let ChefSnitchServiceProxy = DBus.makeProxyClass(ChefSnitchServiceInterface);
+let ChefSnitchServiceProxy = Gio.DBusProxy.makeProxyWrapper(ChefSnitchServiceInterface);
 
 // Applet 
 //
@@ -72,16 +94,16 @@ MyApplet.prototype = {
     Applet.IconApplet.prototype._init.call(this, orientation);
       this.set_applet_icon_symbolic_name('emblem-system-symbolic');
 
-      this.proxy = new ChefSnitchServiceProxy(DBus.system, BUS_NAME, OBJECT_PATH);
-      this.proxy.connect('IsActiveHasChanged', Lang.bind(this, this._updateIcon));
-      this.proxy.connect('MessageNotified', Lang.bind(this, this._doNotify));
+      this.proxy = new ChefSnitchServiceProxy(Gio.DBus.system, BUS_NAME, OBJECT_PATH);
+      this.proxy.connectSignal('IsActiveHasChanged', Lang.bind(this, this._updateIcon));
+      this.proxy.connectSignal('MessageNotified', Lang.bind(this, this._doNotify));
 
       this._isFirstRun = true;
       this._updateIcon();
   },
   _updateIcon: function () {
     this.proxy.GetActiveRemote(Lang.bind(this, function (active, err) {
-      if (active) {
+      if (String(active) === "true") {
         this.set_applet_icon_symbolic_name('emblem-synchronizing-symbolic');
         this.set_applet_tooltip(ACTIVE_TRUE_MSG);
 //        Main.notify(APPLET_TITLE, ACTIVE_TRUE_MSG);
@@ -89,7 +111,7 @@ MyApplet.prototype = {
         this.set_applet_icon_symbolic_name('emblem-system-symbolic');
         this.set_applet_tooltip(ACTIVE_FALSE_MSG);
         // Do not notify if _isFirstRun
-//        if (!this._isFirstRun) { Main.notify(APPLET_TITLE, ACTIVE_FALSE_MSG) };
+ //       if (!this._isFirstRun) { Main.notify(APPLET_TITLE, ACTIVE_FALSE_MSG) };
       }
       this._isFirstRun = false;
     }));
